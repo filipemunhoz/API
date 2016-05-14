@@ -13,6 +13,34 @@ $(function(){
 	var cidade	= $("#cidade");
 	var vento	= $(".vento");
 	var mensagem	= $(".mensagem");
+	var $listaCidades = [];
+ 
+	cidade.autocomplete({
+		source: $listaCidades
+	});
+
+	function addCidades(nome){
+		$listaCidades.push(nome);
+	}
+
+	function carregaListaCidades(){		
+		$.getJSON("cidades_br.json")
+			.done(onCarregaListaCidadesDone)
+			.fail(onCarregaListaCidadesFail);
+	}
+
+	function onCarregaListaCidadesDone(data){
+		for(var i=0; i < data.length; i++){
+			addCidades(data[i].name);			
+		}
+	}
+	
+	function onCarregaListaCidadesFail(error){
+		console.log("Erro: " + error.statusText);
+		mensagem.css("color", "red");
+		mensagem.text(error.statusText);
+	}
+	
 	
 	$("#cidade").keydown(function(event){
 		onCidadeKeyDown(event);		
@@ -65,4 +93,6 @@ $(function(){
 			.done(onTempoDone)
 			.fail(onTempoError);
 	}
+
+	carregaListaCidades();
 });
