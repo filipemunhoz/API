@@ -8,20 +8,42 @@
 // ISO 3166 country codes - Brazil -> BR
 
 $(function(){
-	var servico 	= "http://api.openweathermap.org/data/2.5/weather?";
-	var appId	= "a34fc68a89f70d121d8b5524eda79e82";
-	var cidade	= $("#cidade");
-	var vento	= $(".vento");
-	var mensagem	= $(".mensagem");
-	var $listaCidades = [];
- 
-	cidade.autocomplete({
-		source: $listaCidades
+	var servico 		= "http://api.openweathermap.org/data/2.5/weather?";
+	var appId		= "a34fc68a89f70d121d8b5524eda79e82";
+	var units		= "metric"; //Celsius 
+	//var units		= "imperial"; //Fahrenheit
+
+	var temperaturaAtual	= $(".temperaturaAtual");
+	var cidade		= $("#cidade");
+	var cidadeId		= $("#cidadeId");
+	var vento		= $(".vento");
+	var mensagem		= $(".mensagem");
+	var $listaCidades 	= [];
+	
+	$("#cidade").keydown(function(event){
+		onCidadeKeyDown(event);		
+	});
+	
+	$("#clear").click(function(event){
+		clear();
+		cidade.val('');
 	});
 
-	function addCidades(nome){
-		$listaCidades.push(nome);
+	cidade.autocomplete({
+		source: $listaCidades,
+		minLength: 3,
+		select: function(event, ui){
+			cidadeId.val(ui.item.id),
+			//cidadeId.val(ui.item.label);	
+			buscaTempo();
+		}
+	});
+
+	function addCidades(_id, _nome){
+		$listaCidades.push({id: _id, value: _nome});
+		 
 	}
+ 
 
 	function carregaListaCidades(){		
 		$.getJSON("cidades_br.json")
@@ -31,7 +53,7 @@ $(function(){
 
 	function onCarregaListaCidadesDone(data){
 		for(var i=0; i < data.length; i++){
-			addCidades(data[i].name);			
+			addCidades(data[i]._id, data[i].name);			
 		}
 	}
 	
@@ -40,16 +62,7 @@ $(function(){
 		mensagem.css("color", "red");
 		mensagem.text(error.statusText);
 	}
-	
-	
-	$("#cidade").keydown(function(event){
-		onCidadeKeyDown(event);		
-	});
-	
-	$("#clear").click(function(event){
-		clear();
-		cidade.val('');
-	});	
+
 	
 	function clear(){
 		mensagem.empty();
@@ -78,6 +91,7 @@ $(function(){
 	}
 				
 	function onTempoDone(data){
+		temperaturaAtual.text("Temperatura: " + data.main.temp )		
 		vento.text("Velocidade: " + data.wind.speed + " knots /" + data.wind.deg + " graus")
 	}
 	
@@ -88,8 +102,8 @@ $(function(){
 	}
 	
 	function buscaTempo(){						
-		//console.log(servico + "id=" + cidade.val() + "&APPID=" + appId);
-		$.getJSON(servico + "id=" + cidade.val() + "&APPID=" + appId)
+		console.log(servico + "id=" + cidadeId.val() + "&units=" + units + "&APPID=" + appId);
+		$.getJSON(servico + "id=" + cidadeId.val() + "&units=" + units + "&APPID=" + appId)
 			.done(onTempoDone)
 			.fail(onTempoError);
 	}

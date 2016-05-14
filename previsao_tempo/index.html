@@ -10,16 +10,18 @@
 	</head>
 	
 	<body> 
-  		<h1>Cidade:</h1> 
-		<input type="text" id="cidade" value="3461786">
-		<button type="button" id="clear">Limpar</button>
+		<div class="ui-widget">
+  			<label for="cidade">Cidade: </label>
+			<input type="text" id="cidade" value="" placeholder="Digite a cidade...">
+			<input type="hidden" id="cidadeId">
+			<button type="button" id="clear">Limpar</button>
+		</div>
 		
 		<div id="mensagem" class="mensagem"></div>	
 				
 		<div id="previsao">
-			<div class="atual"></div>
- 
-			<div class="vento"></div>
+			<div class="temperaturaAtual"></div> 
+			<div class="vento"></div> 
 		</div>
 	</body>
 </html>
